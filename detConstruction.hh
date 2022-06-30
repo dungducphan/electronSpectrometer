@@ -21,16 +21,31 @@
 #include "G4LogicalBorderSurface.hh"
 #include "G4LogicalSkinSurface.hh"
 #include "G4SDManager.hh"
+#include "G4FieldManager.hh"
+#include "G4MagneticField.hh"
+#include "G4UniformMagField.hh"
+#include "G4AutoDelete.hh"
 
 #include "TMath.h"
 
 class G4VPhysicalVolume;
+
 class G4LogicalVolume;
 
+class G4UniformMagField;
+
 class detConstruction : public G4VUserDetectorConstruction {
-  public:
+public:
     detConstruction();
     virtual ~detConstruction();
 
-    virtual G4VPhysicalVolume* Construct();
+    G4VPhysicalVolume *Construct();
+    void ConstructSDandField();
+
+private:
+    G4LogicalVolume *logicMagField = nullptr;
+    G4VPhysicalVolume *physMagField = nullptr;
+
+    G4LogicalVolume *logicWorld = nullptr;
+    G4VPhysicalVolume *physWorld = nullptr;
 };
