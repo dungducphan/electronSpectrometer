@@ -42,9 +42,48 @@ public:
     G4VPhysicalVolume *Construct();
     void ConstructSDandField();
 
-private:
+    G4double worldSize;
+
+    // Magnet
+    G4double magneticField_Y;
+    G4double magneticField_X;
+    G4double magneticField_Z;
+    G4double magneticField_Position;
+    G4double positionOffset;
+
+    // DRZ-Cube
+    G4double drzCube_X;
+    G4double drzCube_Y;
+    G4double drzCube_Z;
+    G4double drzCube_Position;
+
+    // DRZ-Plate
+    G4double drzPlate_X;
+    G4double drzPlate_Y;
+    G4double drzPlate_Z;
+    G4double drzPlate_1_Position_Z;
+    G4double drzPlate_2_Position_Z;
+    G4double drzPlate_Position_X;
+
+    // Image Plate (IP)
+    G4double IP_X;
+    G4double IP_Y;
+    G4double IP_Z;
+    G4double IP_Position_Z;
+    G4double IP_Position_X;
+
     G4LogicalVolume *logicMagField = nullptr;
     G4VPhysicalVolume *physMagField = nullptr;
+
+    G4LogicalVolume *logicDRZCube = nullptr;
+    G4VPhysicalVolume *physDRZCube = nullptr;
+
+    G4LogicalVolume *logicIP = nullptr;
+    G4VPhysicalVolume *physIP = nullptr;
+
+    G4LogicalVolume *logicDRZPlate= nullptr;
+    G4VPhysicalVolume *physDRZPlate_1 = nullptr;
+    G4VPhysicalVolume *physDRZPlate_2 = nullptr;
 
     G4LogicalVolume *logicWorld = nullptr;
     G4VPhysicalVolume *physWorld = nullptr;

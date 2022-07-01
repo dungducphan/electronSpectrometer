@@ -11,6 +11,10 @@
 #include "G4Event.hh"
 #include "G4AnalysisManager.hh"
 #include "G4String.hh"
+#include "G4MTRunManager.hh"
+#include "G4RunManager.hh"
+
+#include "detConstruction.hh"
 
 #include "TMath.h"
 
@@ -23,4 +27,5 @@ public:
 
 private:
   G4GeneralParticleSource *fGeneralParticleSource = nullptr;
+  detConstruction* fDetCon;
 };
