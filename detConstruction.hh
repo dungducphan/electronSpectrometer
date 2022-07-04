@@ -26,6 +26,8 @@
 #include "G4UniformMagField.hh"
 #include "G4AutoDelete.hh"
 
+#include "spectrometerSD.hh"
+
 #include "TMath.h"
 
 class G4VPhysicalVolume;

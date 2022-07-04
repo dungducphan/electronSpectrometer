@@ -1,4 +1,5 @@
 #include "detConstruction.hh"
+#include "TString.h"
 
 detConstruction::detConstruction() : G4VUserDetectorConstruction(),
                                      worldSize(5 * m),
@@ -23,7 +24,6 @@ detConstruction::detConstruction() : G4VUserDetectorConstruction(),
     drzPlate_Position_X = (8.08 - 2.69) * cm;
     IP_Position_Z = positionOffset + 254.6 * cm;
     IP_Position_X = 10 * cm;
-
 }
 
 detConstruction::~detConstruction() {}
@@ -56,6 +56,7 @@ G4VPhysicalVolume *detConstruction::Construct() {
     logicDRZCube = new G4LogicalVolume(solidDRZCube, drz, "logicDRZCube");
     G4RotationMatrix* rotMat_DRZCube = new G4RotationMatrix(G4ThreeVector(0, 1, 0), -TMath::PiOver4());
     physDRZCube = new G4PVPlacement(rotMat_DRZCube, G4ThreeVector(0, 0, worldSize/2 - drzCube_Position), logicDRZCube, "physDRZCube", logicWorld, false, 0, checkOverlaps);
+    G4cout << Form("DRZCube(%4.8f, %4.8f, %4.8f)", 0., 0., (worldSize/2 - drzCube_Position)/m) << G4endl;
 
     // DRZ Plate 1
     G4Box *solidDRZPlate = new G4Box("solidDRZPlate", drzPlate_X/2, drzPlate_Y/2, drzPlate_Z/2);
@@ -63,11 +64,14 @@ G4VPhysicalVolume *detConstruction::Construct() {
     G4RotationMatrix* rotMat_DRZPlate = new G4RotationMatrix(G4ThreeVector(0, 1, 0), TMath::PiOver4());
     physDRZPlate_1 = new G4PVPlacement(rotMat_DRZPlate, G4ThreeVector(drzPlate_Position_X, 0, worldSize/2 - drzPlate_1_Position_Z), logicDRZPlate, "physDRZPlate_1", logicWorld, false, 0, checkOverlaps);
     physDRZPlate_2 = new G4PVPlacement(rotMat_DRZPlate, G4ThreeVector(drzPlate_Position_X, 0, worldSize/2 - drzPlate_2_Position_Z), logicDRZPlate, "physDRZPlate_2", logicWorld, false, 0, checkOverlaps);
+    G4cout << Form("DRZPlate_1(%4.8f, %4.8f, %4.8f)", drzPlate_Position_X / m, 0., (worldSize/2 - drzPlate_1_Position_Z) / m) << G4endl;
+    G4cout << Form("DRZPlate_2(%4.8f, %4.8f, %4.8f)", drzPlate_Position_X / m, 0., (worldSize/2 - drzPlate_2_Position_Z) / m) << G4endl;
 
     // IP
     G4Box *solidIP = new G4Box("solidIP", IP_X/2, IP_Y/2, IP_Z/2);
     logicIP = new G4LogicalVolume(solidIP, drz, "logicIP");
     physIP = new G4PVPlacement(0, G4ThreeVector(IP_Position_X, 0, worldSize/2 - IP_Position_Z), logicIP, "physIP", logicWorld, false, 0, checkOverlaps);
+    G4cout << Form("IP(%4.8f, %4.8f, %4.8f)", IP_Position_X / m, 0., (worldSize/2 - IP_Position_Z) / m) << G4endl;
 
     // Aluminum Laser Block
     G4Box *solidAlLB = new G4Box("solidAlLB", 5 * cm / 2, 5 * cm / 2, 100 * um / 2);
@@ -86,5 +90,10 @@ void detConstruction::ConstructSDandField() {
     localFieldMgr->SetDetectorField(magField);
     localFieldMgr->CreateChordFinder(magField);
 
+    spectrometerSD *sd = new spectrometerSD("sd");
+    G4SDManager::GetSDMpointer()->AddNewDetector(sd);
+    SetSensitiveDetector("logicDRZCube", sd);
+    SetSensitiveDetector("logicDRZPlate", sd);
+    SetSensitiveDetector("logicIP", sd);
 }
 

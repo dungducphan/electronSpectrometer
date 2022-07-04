@@ -9,6 +9,7 @@ runAction::runAction() : G4UserRunAction() {
     man->CreateNtupleDColumn("Z");
     man->CreateNtupleDColumn("T");
     man->CreateNtupleDColumn("detID");
+    man->CreateNtupleDColumn("PID");
     man->FinishNtuple(0);
 }
 
