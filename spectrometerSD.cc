@@ -12,14 +12,7 @@ G4bool spectrometerSD::ProcessHits(G4Step * aStep, G4TouchableHistory *) {
         return false;
     }
 
-    G4int PID;
-    if (track->GetDefinition() == G4ParticleTable::GetParticleTable()->FindParticle(11)) {
-        PID = 1;
-    } else if (track->GetDefinition() == G4ParticleTable::GetParticleTable()->FindParticle(22)) {
-        PID = 2;
-    } else {
-        PID = 0;
-    }
+    G4int PID = track->GetDefinition()->GetPDGEncoding();
 
     G4StepPoint *prePoint = aStep->GetPreStepPoint();
     G4int SensitiveDetectorID;
@@ -40,6 +33,8 @@ G4bool spectrometerSD::ProcessHits(G4Step * aStep, G4TouchableHistory *) {
     G4double y_hit = prePoint->GetPosition().getY();
     G4double z_hit = prePoint->GetPosition().getZ();
     G4double t_hit = prePoint->GetGlobalTime();
+    G4double edep  = aStep->GetTotalEnergyDeposit();
+    G4double stepLength  = aStep->GetStepLength();
 
     G4AnalysisManager* man = G4AnalysisManager::Instance();
     man->FillNtupleDColumn(0, energy / MeV);
@@ -49,6 +44,9 @@ G4bool spectrometerSD::ProcessHits(G4Step * aStep, G4TouchableHistory *) {
     man->FillNtupleDColumn(4, t_hit / ns);
     man->FillNtupleDColumn(5, SensitiveDetectorID);
     man->FillNtupleDColumn(6, PID);
+    man->FillNtupleDColumn(7, edep / eV);
+    man->FillNtupleDColumn(8, stepLength / um);
+    man->FillNtupleDColumn(9, (edep / eV) / (stepLength / um));
     man->AddNtupleRow(0);
 
     return true;

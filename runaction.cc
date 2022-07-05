@@ -10,6 +10,9 @@ runAction::runAction() : G4UserRunAction() {
     man->CreateNtupleDColumn("T");
     man->CreateNtupleDColumn("detID");
     man->CreateNtupleDColumn("PID");
+    man->CreateNtupleDColumn("Edep");
+    man->CreateNtupleDColumn("StepLength");
+    man->CreateNtupleDColumn("EnergyLoss");
     man->FinishNtuple(0);
 }
 

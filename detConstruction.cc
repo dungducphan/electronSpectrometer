@@ -9,13 +9,13 @@ detConstruction::detConstruction() : G4VUserDetectorConstruction(),
                                      positionOffset(10 * cm),
                                      drzCube_X(3 * 2.54 * cm),
                                      drzCube_Y(3 * 2.54 * cm),
-                                     drzCube_Z(507 * um),
+                                     drzCube_Z(307 * um),
                                      drzPlate_X(9 * 2.54 * cm),
                                      drzPlate_Y(2.5 * 2.54 * cm),
-                                     drzPlate_Z(507 * um),
+                                     drzPlate_Z(307 * um),
                                      IP_X(35*cm),
                                      IP_Y(15*cm),
-                                     IP_Z(500*um)
+                                     IP_Z(300*um)
 {
     magneticField_Position = positionOffset + 83.50 * cm;
     drzCube_Position = positionOffset + 63.31 * cm;
