@@ -1,6 +1,6 @@
 #include "generator.hh"
 
-generator::generator() {
+generator::generator(std::vector<std::pair<G4double, G4double>> gunEne) {
     fGeneralParticleSource = new G4GeneralParticleSource();
 
     fDetCon = (detConstruction*) G4RunManager::GetRunManager()->GetUserDetectorConstruction();
@@ -9,11 +9,13 @@ generator::generator() {
     G4ParticleDefinition *particle = G4ParticleTable::GetParticleTable()->FindParticle("e-");
 
     sps->SetParticleDefinition(particle);
-    sps->SetNumberOfParticles(10000);
+    sps->SetNumberOfParticles(100);
 
-    sps->GetPosDist()->SetPosDisType("Point"); // Point, Beam, Plane, Surface, Volume
+    sps->GetPosDist()->SetPosDisType("Volume"); // Point, Beam, Plane, Surface, Volume
+    sps->GetPosDist()->SetPosDisShape("Cylinder");
     sps->GetPosDist()->SetCentreCoords(G4ThreeVector(0., 0., fDetCon->worldSize/2 - fDetCon->positionOffset));
-    sps->GetPosDist()->ConfineSourceToVolume("NULL");
+    sps->GetPosDist()->SetHalfZ(0.5 * mm);
+    sps->GetPosDist()->SetRadius(10 * um);
 
     sps->GetAngDist()->SetAngDistType("iso"); // Isotropic, Cosine-law, Beam, User-defined
 
@@ -22,10 +24,13 @@ generator::generator() {
     sps->GetAngDist()->SetMinPhi(0 * rad);
     sps->GetAngDist()->SetMaxPhi(TMath::Pi() * 2. * rad);
 
-    // FIXME: before giving Ou an image, try changing this energy distribution to something more skewed toward lower energies.
-    sps->GetEneDist()->SetEnergyDisType("Gauss"); // Mono, Lin, Pow, Exp, Gaus, Brem, BBody, Cdg (cosmic diffuse gamma), User, Arb, Epn (energy per nucleon)
-    sps->GetEneDist()->SetMonoEnergy(2 * GeV);
-    sps->GetEneDist()->SetBeamSigmaInE(0.05 * GeV);
+    // Somewhat realistic energy distribution
+    sps->GetEneDist()->SetEnergyDisType("User");
+    for (int i = 0; i < gunEne.size(); i++) {
+        G4double ehi = std::get<0>(gunEne.at(i)) * MeV;
+        G4double val = std::get<1>(gunEne.at(i));
+        sps->GetEneDist()->UserEnergyHisto(G4ThreeVector(ehi, val, 0));
+    }
 }
 
 generator::~generator() {

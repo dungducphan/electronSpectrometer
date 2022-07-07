@@ -20,7 +20,7 @@
 
 class generator : public G4VUserPrimaryGeneratorAction {
 public:
-  generator();
+  generator(std::vector<std::pair<G4double, G4double>> gunEne);
   ~generator() override;
 
   void GeneratePrimaries(G4Event* anEvent) override;
