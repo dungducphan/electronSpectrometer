@@ -29,6 +29,7 @@
 #include "spectrometerSD.hh"
 
 #include "TMath.h"
+#include "TString.h"
 
 class G4VPhysicalVolume;
 
@@ -89,4 +90,14 @@ public:
 
     G4LogicalVolume *logicWorld = nullptr;
     G4VPhysicalVolume *physWorld = nullptr;
+
+    G4VPhysicalVolume* MakePixelizedDetectorVolume(G4int UnitID, G4double* UnitSize, G4Material* mat, G4RotationMatrix* rotMat, G4ThreeVector& position, G4bool chekcOverLaps);
+    G4double pixelSize_X;
+    G4double pixelSize_Y;
+
+    G4Material *worldMat;
+    G4Material *aluminum;
+    G4Material *phosphor;
+    G4Material *pet;
+    G4Material *drz;
 };

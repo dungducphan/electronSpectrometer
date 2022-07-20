@@ -28,17 +28,42 @@ detConstruction::detConstruction() : G4VUserDetectorConstruction(),
 
 detConstruction::~detConstruction() {}
 
+G4VPhysicalVolume* detConstruction::MakePixelizedDetectorVolume(G4int UnitID, G4double* UnitSize, G4Material* material, G4RotationMatrix* rotMat, G4ThreeVector& position, G4bool checkOverLaps = true) {
+    G4Box *solidParent = new G4Box(Form("solidParent_%02i", UnitID), UnitSize[0]/2, UnitSize[1]/2, UnitSize[2]/2);
+    G4LogicalVolume* logicParent = new G4LogicalVolume(solidParent, material, Form("logicParent_%02i", UnitID));
+    G4VPhysicalVolume* physParent = new G4PVPlacement(rotMat, position, logicParent, Form("physParent_%02i", UnitID), logicWorld, false, 0, checkOverLaps);
+
+    G4Box* solidPixel = new G4Box(Form("solidPixel_%02i", UnitID), pixelSize_X * 0.5, pixelSize_Y * 0.5, UnitSize[2] * 0.5);
+    G4LogicalVolume* logicPixel = new G4LogicalVolume(solidPixel, material, Form("logicPixel_%02i", UnitID));
+
+    unsigned int numberOfCells_X = UnitSize[0] / pixelSize_X;
+    unsigned int numberOfCells_Y = UnitSize[1] / pixelSize_Y;
+    for (unsigned int i = 0; i < numberOfCells_X; ++i) {
+        for (unsigned  int j = 0; j < numberOfCells_Y; ++j) {
+            G4ThreeVector pixelPosition((- UnitSize[0] + pixelSize_X) * 0.5 + i * pixelSize_X,
+                                        (- UnitSize[1] + pixelSize_Y) * 0.5 + j * pixelSize_Y,
+                                        0.);
+            new G4PVPlacement(0, pixelPosition, logicPixel, Form("physPixel_%02i_%04i_%04i", UnitID, i, j), logicParent, false, 1E7 * UnitID + j + numberOfCells_X * i, checkOverLaps);
+        }
+    }
+
+    return physParent;
+}
+
 G4VPhysicalVolume *detConstruction::Construct() {
     G4NistManager *nist = G4NistManager::Instance();
     G4bool checkOverlaps = true;
 
-    G4Material *worldMat = nist->FindOrBuildMaterial("G4_Galactic");
-    G4Material *aluminum = nist->FindOrBuildMaterial("G4_Al");
-    G4Material *phosphor = new G4Material("Phosphor", 15, 30.974 * g/mole, 4.677 * g / cm3);
-    G4Material *pet      = nist->FindOrBuildMaterial("G4_POLYETHYLENE");
-    G4Material *drz      = new G4Material("DRZ", 163.52 * mg/cm2, 2);
+    worldMat = nist->FindOrBuildMaterial("G4_Galactic");
+    aluminum = nist->FindOrBuildMaterial("G4_Al");
+    phosphor = new G4Material("Phosphor", 15, 30.974 * g/mole, 4.677 * g / cm3);
+    pet      = nist->FindOrBuildMaterial("G4_POLYETHYLENE");
+    drz      = new G4Material("DRZ", 163.52 * mg/cm2, 2);
     drz->AddMaterial(phosphor, 88.67 * perCent);
     drz->AddMaterial(pet, 11.33 * perCent);
+
+    pixelSize_X = 1000 * um;
+    pixelSize_Y = 1000 * um;
 
     // World
     G4Box *solidWorld = new G4Box("solidWorld", 0.5 * worldSize, 0.5 * worldSize, 0.5 * worldSize);
@@ -51,27 +76,10 @@ G4VPhysicalVolume *detConstruction::Construct() {
     logicMagField = new G4LogicalVolume(solidMagField, worldMat, "logicMagField");
     physMagField = new G4PVPlacement(0, G4ThreeVector(0, 0, worldSize / 2 - magneticField_Position), logicMagField, "physMagField", logicWorld, false, 0, checkOverlaps);
 
-    // DRZ Cube
-    G4Box *solidDRZCube = new G4Box("solidDRZCube", drzCube_X/2, drzCube_Y/2, drzCube_Z/2);
-    logicDRZCube = new G4LogicalVolume(solidDRZCube, drz, "logicDRZCube");
-    G4RotationMatrix* rotMat_DRZCube = new G4RotationMatrix(G4ThreeVector(0, 1, 0), -TMath::PiOver4());
-    physDRZCube = new G4PVPlacement(rotMat_DRZCube, G4ThreeVector(0, 0, worldSize/2 - drzCube_Position), logicDRZCube, "physDRZCube", logicWorld, false, 0, checkOverlaps);
-    G4cout << Form("DRZCube(%4.8f, %4.8f, %4.8f)", 0., 0., (worldSize/2 - drzCube_Position)/m) << G4endl;
 
-    // DRZ Plate 1
-    G4Box *solidDRZPlate = new G4Box("solidDRZPlate", drzPlate_X/2, drzPlate_Y/2, drzPlate_Z/2);
-    logicDRZPlate = new G4LogicalVolume(solidDRZPlate, drz, "logicDRZPlate");
-    G4RotationMatrix* rotMat_DRZPlate = new G4RotationMatrix(G4ThreeVector(0, 1, 0), TMath::PiOver4());
-    physDRZPlate_1 = new G4PVPlacement(rotMat_DRZPlate, G4ThreeVector(drzPlate_Position_X, 0, worldSize/2 - drzPlate_1_Position_Z), logicDRZPlate, "physDRZPlate_1", logicWorld, false, 0, checkOverlaps);
-    physDRZPlate_2 = new G4PVPlacement(rotMat_DRZPlate, G4ThreeVector(drzPlate_Position_X, 0, worldSize/2 - drzPlate_2_Position_Z), logicDRZPlate, "physDRZPlate_2", logicWorld, false, 0, checkOverlaps);
-    G4cout << Form("DRZPlate_1(%4.8f, %4.8f, %4.8f)", drzPlate_Position_X / m, 0., (worldSize/2 - drzPlate_1_Position_Z) / m) << G4endl;
-    G4cout << Form("DRZPlate_2(%4.8f, %4.8f, %4.8f)", drzPlate_Position_X / m, 0., (worldSize/2 - drzPlate_2_Position_Z) / m) << G4endl;
-
-    // IP
-    G4Box *solidIP = new G4Box("solidIP", IP_X/2, IP_Y/2, IP_Z/2);
-    logicIP = new G4LogicalVolume(solidIP, drz, "logicIP");
-    physIP = new G4PVPlacement(0, G4ThreeVector(IP_Position_X, 0, worldSize/2 - IP_Position_Z), logicIP, "physIP", logicWorld, false, 0, checkOverlaps);
-    G4cout << Form("IP(%4.8f, %4.8f, %4.8f)", IP_Position_X / m, 0., (worldSize/2 - IP_Position_Z) / m) << G4endl;
+    G4double IP_Size[3] = {10 * cm, 10 * cm, IP_Z};
+    G4ThreeVector ip_pos(0., 0., 0.);
+    physIP = MakePixelizedDetectorVolume(2, &IP_Size[0], drz, 0, ip_pos);
 
     // Aluminum Laser Block
     G4Box *solidAlLB = new G4Box("solidAlLB", 5 * cm / 2, 5 * cm / 2, 100 * um / 2);
@@ -92,8 +100,6 @@ void detConstruction::ConstructSDandField() {
 
     spectrometerSD *sd = new spectrometerSD("sd");
     G4SDManager::GetSDMpointer()->AddNewDetector(sd);
-    SetSensitiveDetector("logicDRZCube", sd);
-    SetSensitiveDetector("logicDRZPlate", sd);
-    SetSensitiveDetector("logicIP", sd);
+    SetSensitiveDetector("logicPixel_02", sd);
 }
 

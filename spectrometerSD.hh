@@ -18,6 +18,8 @@
 #include "G4SystemOfUnits.hh"
 #include "globals.hh"
 
+#include <string>
+
 class G4Step;
 
 class spectrometerSD : public G4VSensitiveDetector {
@@ -25,5 +27,9 @@ public:
     spectrometerSD(const G4String& name);
     virtual ~spectrometerSD();
 
+    void ParseVolumeName(std::string DetectorName, unsigned int& UnitID, unsigned int& X_index, unsigned int& Y_index);
+
     virtual G4bool  ProcessHits(G4Step*, G4TouchableHistory*);
+
+    std::string delimiter;
 };

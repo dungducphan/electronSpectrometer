@@ -1,8 +1,24 @@
 #include "spectrometerSD.hh"
 
-spectrometerSD::spectrometerSD(const G4String &name) : G4VSensitiveDetector(name) {}
+spectrometerSD::spectrometerSD(const G4String &name) : G4VSensitiveDetector(name) {
+    delimiter = "_";
+}
 
 spectrometerSD::~spectrometerSD() {}
+
+void spectrometerSD::ParseVolumeName(std::string DetectorName, unsigned int& UnitID, unsigned int& X_index, unsigned int& Y_index) {
+    size_t pos = 0;
+    std::vector<std::string> token;
+    while ((pos = DetectorName.find(delimiter)) != std::string::npos) {
+        token.push_back(DetectorName.substr(0, pos));
+        DetectorName.erase(0, pos + delimiter.length());
+    }
+    token.push_back(DetectorName);
+
+    UnitID  = std::stoi(token.at(1));
+    X_index = std::stoi(token.at(2));
+    Y_index = std::stoi(token.at(3));
+}
 
 G4bool spectrometerSD::ProcessHits(G4Step * aStep, G4TouchableHistory *) {
     G4Track *track = aStep->GetTrack();
@@ -15,38 +31,20 @@ G4bool spectrometerSD::ProcessHits(G4Step * aStep, G4TouchableHistory *) {
     G4int PID = track->GetDefinition()->GetPDGEncoding();
 
     G4StepPoint *prePoint = aStep->GetPreStepPoint();
-    G4int SensitiveDetectorID;
-    if (prePoint->GetPhysicalVolume()->GetName() == "physDRZCube") {
-        SensitiveDetectorID = 0;
-    } else if (prePoint->GetPhysicalVolume()->GetName() == "physDRZPlate_1") {
-        SensitiveDetectorID = 1;
-    } else if (prePoint->GetPhysicalVolume()->GetName() == "physIP") {
-        SensitiveDetectorID = 2;
-    } else if (prePoint->GetPhysicalVolume()->GetName() == "physDRZPlate_2") {
-        SensitiveDetectorID = 3;
-    } else {
-        SensitiveDetectorID = -1;
-    }
+    std::string det_name = prePoint->GetPhysicalVolume()->GetName();
+    unsigned int unitID, Xcell_idx, Ycell_idx;
+    ParseVolumeName(det_name, unitID, Xcell_idx, Ycell_idx);
 
     G4double energy = prePoint->GetKineticEnergy();
-    G4double x_hit = prePoint->GetPosition().getX();
-    G4double y_hit = prePoint->GetPosition().getY();
-    G4double z_hit = prePoint->GetPosition().getZ();
-    G4double t_hit = prePoint->GetGlobalTime();
     G4double edep  = aStep->GetTotalEnergyDeposit();
-    G4double stepLength  = aStep->GetStepLength();
 
     G4AnalysisManager* man = G4AnalysisManager::Instance();
     man->FillNtupleDColumn(0, energy / MeV);
-    man->FillNtupleDColumn(1, x_hit / m);
-    man->FillNtupleDColumn(2, y_hit / m);
-    man->FillNtupleDColumn(3, z_hit / m);
-    man->FillNtupleDColumn(4, t_hit / ns);
-    man->FillNtupleDColumn(5, SensitiveDetectorID);
-    man->FillNtupleDColumn(6, PID);
-    man->FillNtupleDColumn(7, edep / eV);
-    man->FillNtupleDColumn(8, stepLength / um);
-    man->FillNtupleDColumn(9, (edep / eV) / (stepLength / um));
+    man->FillNtupleDColumn(1, Xcell_idx);
+    man->FillNtupleDColumn(2, Ycell_idx);
+    man->FillNtupleDColumn(3, unitID);
+    man->FillNtupleDColumn(4, PID);
+    man->FillNtupleDColumn(5, edep / eV);
     man->AddNtupleRow(0);
 
     return true;

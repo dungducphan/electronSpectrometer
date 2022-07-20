@@ -9,7 +9,7 @@ generator::generator(std::vector<std::pair<G4double, G4double>> gunEne) {
     G4ParticleDefinition *particle = G4ParticleTable::GetParticleTable()->FindParticle("e-");
 
     sps->SetParticleDefinition(particle);
-    sps->SetNumberOfParticles(100);
+    sps->SetNumberOfParticles(10000);
 
     sps->GetPosDist()->SetPosDisType("Volume"); // Point, Beam, Plane, Surface, Volume
     sps->GetPosDist()->SetPosDisShape("Cylinder");
