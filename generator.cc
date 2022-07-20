@@ -13,7 +13,7 @@ generator::generator(std::vector<std::pair<G4double, G4double>> gunEne) {
 
     sps->GetPosDist()->SetPosDisType("Volume"); // Point, Beam, Plane, Surface, Volume
     sps->GetPosDist()->SetPosDisShape("Cylinder");
-    sps->GetPosDist()->SetCentreCoords(G4ThreeVector(0., 0., fDetCon->worldSize/2 - fDetCon->positionOffset));
+    sps->GetPosDist()->SetCentreCoords(G4ThreeVector(0., 0., fDetCon->worldSize_Z/2 - fDetCon->positionOffset));
     sps->GetPosDist()->SetHalfZ(0.5 * mm);
     sps->GetPosDist()->SetRadius(10 * um);
 

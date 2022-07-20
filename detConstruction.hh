@@ -45,7 +45,9 @@ public:
     G4VPhysicalVolume *Construct();
     void ConstructSDandField();
 
-    G4double worldSize;
+    G4double worldSize_X;
+    G4double worldSize_Y;
+    G4double worldSize_Z;
 
     // Magnet
     G4double magneticField_Y;
