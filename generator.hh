@@ -17,6 +17,14 @@
 #include "detConstruction.hh"
 
 #include "TMath.h"
+#include "TH1D.h"
+
+#include <utility>
+
+typedef double MeanEnergy_t;
+typedef double StdDevEnergy_t;
+typedef double RelativeIntensity_t;
+typedef std::tuple<MeanEnergy_t, StdDevEnergy_t, RelativeIntensity_t> PeakParam_t;
 
 class generator : public G4VUserPrimaryGeneratorAction {
 public:
@@ -24,6 +32,18 @@ public:
   ~generator() override;
 
   void GeneratePrimaries(G4Event* anEvent) override;
+
+  TH1D*  EnergySpectrumSample();
+  double EnergySpectrumSample_SampleMaximumEnergy();
+  double EnergySpectrumSample_SampleRamUpEnergy();
+  double EnergySpectrumSample_SampleMinimumEnergy();
+  double EnergySpectrumSample_SampleRamDownEnergy();
+  int    EnergySpectrumSample_SampleNumberOfEnergyPeaks();
+  double EnergySpectrumSample_SamplePedestalEnergyIntensity();
+  std::vector<PeakParam_t> EnergySpectrumSample_SamplePeakParameters(int numberOfPeaks);
+
+
+
 
 private:
   G4GeneralParticleSource *fGeneralParticleSource = nullptr;
