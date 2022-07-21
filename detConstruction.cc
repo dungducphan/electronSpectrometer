@@ -54,7 +54,7 @@ G4VPhysicalVolume* detConstruction::MakePixelizedDetectorVolume(G4int UnitID, G4
 
 G4VPhysicalVolume *detConstruction::Construct() {
     G4NistManager *nist = G4NistManager::Instance();
-    G4bool checkOverlaps = true;
+    G4bool checkOverlaps = false;
 
     worldMat = nist->FindOrBuildMaterial("G4_Galactic");
     aluminum = nist->FindOrBuildMaterial("G4_Al");
@@ -82,20 +82,23 @@ G4VPhysicalVolume *detConstruction::Construct() {
     G4double DRZCube_Size[3] = {drzCube_X, drzCube_Y, drzCube_Z};
     G4RotationMatrix* rotMat_DRZCube = new G4RotationMatrix(G4ThreeVector(0, 1, 0), -TMath::PiOver4());
     G4ThreeVector drzcube_pos(0, 0, worldSize_Z/2 - drzCube_Position);
-    physDRZCube = MakePixelizedDetectorVolume(0, &DRZCube_Size[0], drz, rotMat_DRZCube, drzcube_pos);
+    physDRZCube = MakePixelizedDetectorVolume(0, &DRZCube_Size[0], drz, rotMat_DRZCube,
+                                              drzcube_pos, checkOverlaps);
 
     // DRZ Plates
     G4double DRZPlate_Size[3] = {drzPlate_X, drzPlate_Y, drzPlate_Z};
     G4RotationMatrix* rotMat_DRZPlate = new G4RotationMatrix(G4ThreeVector(0, 1, 0), TMath::PiOver4());
     G4ThreeVector drzplate1_pos(drzPlate_Position_X, 0, worldSize_Z/2 - drzPlate_1_Position_Z);
     G4ThreeVector drzplate2_pos(drzPlate_Position_X, 0, worldSize_Z/2 - drzPlate_2_Position_Z);
-    physDRZPlate_1 = MakePixelizedDetectorVolume(1, &DRZPlate_Size[0], drz, rotMat_DRZPlate, drzplate1_pos);
-    physDRZPlate_2 = MakePixelizedDetectorVolume(3, &DRZPlate_Size[0], drz, rotMat_DRZPlate, drzplate2_pos);
+    physDRZPlate_1 = MakePixelizedDetectorVolume(1, &DRZPlate_Size[0], drz, rotMat_DRZPlate,
+                                                 drzplate1_pos, checkOverlaps);
+    physDRZPlate_2 = MakePixelizedDetectorVolume(3, &DRZPlate_Size[0], drz, rotMat_DRZPlate,
+                                                 drzplate2_pos, checkOverlaps);
 
     // IP
     G4double IP_Size[3] = {IP_X, IP_Y, IP_Z};
     G4ThreeVector ip_pos(IP_Position_X, 0, worldSize_Z/2 - IP_Position_Z);
-    physIP = MakePixelizedDetectorVolume(2, &IP_Size[0], drz, 0, ip_pos);
+    physIP = MakePixelizedDetectorVolume(2, &IP_Size[0], drz, 0, ip_pos, checkOverlaps);
 
     // Aluminum Laser Block
     G4Box *solidAlLB = new G4Box("solidAlLB", 5 * cm / 2, 5 * cm / 2, 100 * um / 2);

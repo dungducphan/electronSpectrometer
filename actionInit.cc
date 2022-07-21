@@ -1,7 +1,6 @@
 #include "actionInit.hh"
 
-actionInit::actionInit(std::vector<std::pair<G4double, G4double>> gunEne) : G4VUserActionInitialization() {
-    gunEneDist = gunEne;
+actionInit::actionInit() : G4VUserActionInitialization() {
 }
 
 actionInit::~actionInit() {}
@@ -12,5 +11,5 @@ void actionInit::BuildForMaster() const {
 
 void actionInit::Build() const {
   SetUserAction(new runAction());
-  SetUserAction(new generator(gunEneDist));
+  SetUserAction(new generator());
 }

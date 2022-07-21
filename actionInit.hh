@@ -5,11 +5,9 @@
 
 class actionInit : public G4VUserActionInitialization {
   public:
-    actionInit(std::vector<std::pair<G4double, G4double>> gunEne);
+    actionInit();
     virtual ~actionInit();
 
     virtual void Build() const;
     virtual void BuildForMaster() const;
-
-    std::vector<std::pair<G4double, G4double>> gunEneDist;
 };

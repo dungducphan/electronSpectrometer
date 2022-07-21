@@ -36,17 +36,7 @@ int main(int argc, char **argv) {
     G4VModularPhysicsList *physicsList = new FTFP_BERT;
     physicsList->RegisterPhysics(new G4StepLimiterPhysics());
     runManager->SetUserInitialization(physicsList);
-
-    std::vector<std::pair<G4double, G4double>> gunEne;
-    std::ifstream inSpec("./Spectrum_2.csv");
-    double e_tmp;
-    double flux_tmp;
-    while (inSpec >> e_tmp >> flux_tmp) {
-        std::cout << e_tmp << flux_tmp << std::endl;
-        gunEne.push_back(std::make_pair(e_tmp, flux_tmp));
-    }
-    inSpec.close();
-    runManager->SetUserInitialization(new actionInit(gunEne));
+    runManager->SetUserInitialization(new actionInit());
 
     G4VisManager *visManager = new G4VisExecutive;
     visManager->Initialize();
