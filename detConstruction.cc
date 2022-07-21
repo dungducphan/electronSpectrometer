@@ -50,6 +50,9 @@ G4VPhysicalVolume *detConstruction::Construct() {
     G4Box *solidMagField = new G4Box("solidMagField", magneticField_X / 2, magneticField_Y / 2, magneticField_Z / 2);
     logicMagField = new G4LogicalVolume(solidMagField, worldMat, "logicMagField");
     physMagField = new G4PVPlacement(0, G4ThreeVector(0, 0, worldSize / 2 - magneticField_Position), logicMagField, "physMagField", logicWorld, false, 0, checkOverlaps);
+    G4cout << Form("Magnet(%4.8f, %4.8f, %4.8f)", 0., 0., (worldSize / 2 -
+    magneticField_Position)/m) << G4endl;
+    G4cout << Form("Magnet length: %4.8f", magneticField_Z/m) << G4endl;
 
     // DRZ Cube
     G4Box *solidDRZCube = new G4Box("solidDRZCube", drzCube_X/2, drzCube_Y/2, drzCube_Z/2);
