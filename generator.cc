@@ -11,7 +11,7 @@ generator::generator() {
     G4ParticleDefinition *particle = G4ParticleTable::GetParticleTable()->FindParticle("e-");
 
     sps->SetParticleDefinition(particle);
-    sps->SetNumberOfParticles(10000);
+    sps->SetNumberOfParticles(100000);
 
     sps->GetPosDist()->SetPosDisType("Volume"); // Point, Beam, Plane, Surface, Volume
     sps->GetPosDist()->SetPosDisShape("Cylinder");
