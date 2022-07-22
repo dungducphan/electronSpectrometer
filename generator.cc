@@ -43,14 +43,19 @@ generator::~generator() {
 
 void generator::GeneratePrimaries(G4Event *anEvent) {
     fGeneralParticleSource->GeneratePrimaryVertex(anEvent);
+    G4AnalysisManager* man = G4AnalysisManager::Instance();
+    G4int EHist_ID = man->GetH1Id("Energy");
+    for (unsigned int i = 0; i < anEvent->GetPrimaryVertex()->GetNumberOfParticle(); i++) {
+        man->FillH1(EHist_ID, anEvent->GetPrimaryVertex()->GetPrimary(i)->GetKineticEnergy() / GeV);
+    }
 }
 
 double generator::EnergySpectrumSample_SampleMaximumEnergy() {
-    return fRndNumberGen->Gaus(4.2, 1.8);
+    return fRndNumberGen->Gaus(4.2, 1.1);
 }
 
 double generator::EnergySpectrumSample_SampleMinimumEnergy() {
-    return fRndNumberGen->Gaus(0.8, 1.6);
+    return fRndNumberGen->Gaus(0.8, 0.3);
 }
 
 double generator::EnergySpectrumSample_SampleRamUpEnergy() {
@@ -115,8 +120,6 @@ TH1D *generator::EnergySpectrumSample() {
         tmp_peakFunc->SetParameter(2, std::get<2>(fEnergySpectrumSample_PeakParams.at(i)));
         peakFuncs.push_back(tmp_peakFunc);
     }
-
-    std::cout << "OKO" << std::endl;
 
     for (unsigned int i = 1; i < hEnergySpectrum->GetSize() - 1; i++) {
         double x = hEnergySpectrum->GetBinCenter(i);

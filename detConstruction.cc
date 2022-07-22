@@ -15,10 +15,11 @@ detConstruction::detConstruction() : G4VUserDetectorConstruction(),
                                      drzPlate_X(9 * 2.54 * cm),
                                      drzPlate_Y(2.5 * 2.54 * cm),
                                      drzPlate_Z(507 * um),
-                                     IP_X(35*cm),
-                                     IP_Y(15*cm),
-                                     IP_Z(500*um)
-{
+                                     IP_X(35 * cm),
+                                     IP_Y(15 * cm),
+                                     IP_Z(500 * um),
+                                     pixelSize_X(100 * um),
+                                     pixelSize_Y(100 * um) {
     magneticField_Position = positionOffset + 83.50 * cm;
     drzCube_Position = positionOffset + 63.31 * cm;
     drzPlate_1_Position_Z = positionOffset + 173.92 * cm;
@@ -63,9 +64,6 @@ G4VPhysicalVolume *detConstruction::Construct() {
     drz      = new G4Material("DRZ", 163.52 * mg/cm2, 2);
     drz->AddMaterial(phosphor, 88.67 * perCent);
     drz->AddMaterial(pet, 11.33 * perCent);
-
-    pixelSize_X = 1000 * um;
-    pixelSize_Y = 1000 * um;
 
     // World
     G4Box *solidWorld = new G4Box("solidWorld", 0.5 * worldSize_X, 0.5 * worldSize_Y, 0.5 * worldSize_Z);

@@ -11,5 +11,6 @@ void actionInit::BuildForMaster() const {
 
 void actionInit::Build() const {
   SetUserAction(new runAction());
+  SetUserAction(new eventAction());
   SetUserAction(new generator());
 }

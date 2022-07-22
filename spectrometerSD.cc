@@ -2,6 +2,12 @@
 
 spectrometerSD::spectrometerSD(const G4String &name) : G4VSensitiveDetector(name) {
     delimiter = "_";
+
+    G4AnalysisManager* man = G4AnalysisManager::Instance();
+    DRZC_ID = man->GetH2Id("DRZC");
+    DRZ1_ID = man->GetH2Id("DRZ1");
+    DRZ2_ID = man->GetH2Id("DRZ2");
+    IMPL_ID = man->GetH2Id("IMPL");
 }
 
 spectrometerSD::~spectrometerSD() {}
@@ -35,17 +41,13 @@ G4bool spectrometerSD::ProcessHits(G4Step * aStep, G4TouchableHistory *) {
     unsigned int unitID, Xcell_idx, Ycell_idx;
     ParseVolumeName(det_name, unitID, Xcell_idx, Ycell_idx);
 
-    G4double energy = prePoint->GetKineticEnergy();
     G4double edep  = aStep->GetTotalEnergyDeposit();
 
     G4AnalysisManager* man = G4AnalysisManager::Instance();
-    man->FillNtupleDColumn(0, energy / MeV);
-    man->FillNtupleDColumn(1, Xcell_idx);
-    man->FillNtupleDColumn(2, Ycell_idx);
-    man->FillNtupleDColumn(3, unitID);
-    man->FillNtupleDColumn(4, PID);
-    man->FillNtupleDColumn(5, edep / eV);
-    man->AddNtupleRow(0);
+    if (unitID == 0) man->FillH2(DRZC_ID, Xcell_idx + 0.1, Ycell_idx + 0.1, edep / eV);
+    if (unitID == 1) man->FillH2(DRZ1_ID, Xcell_idx + 0.1, Ycell_idx + 0.1, edep / eV);
+    if (unitID == 3) man->FillH2(DRZ2_ID, Xcell_idx + 0.1, Ycell_idx + 0.1, edep / eV);
+    if (unitID == 2) man->FillH2(IMPL_ID, Xcell_idx + 0.1, Ycell_idx + 0.1, edep / eV);
 
     return true;
 }

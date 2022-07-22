@@ -32,4 +32,9 @@ public:
     virtual G4bool  ProcessHits(G4Step*, G4TouchableHistory*);
 
     std::string delimiter;
+
+    G4int DRZC_ID;
+    G4int DRZ1_ID;
+    G4int DRZ2_ID;
+    G4int IMPL_ID;
 };

@@ -2,14 +2,12 @@
 
 runAction::runAction() : G4UserRunAction() {
     man = G4AnalysisManager::Instance();
-    man->CreateNtuple("BeamImage", "BeamImage");
-    man->CreateNtupleDColumn("E");
-    man->CreateNtupleDColumn("X");
-    man->CreateNtupleDColumn("Y");
-    man->CreateNtupleDColumn("detID");
-    man->CreateNtupleDColumn("PID");
-    man->CreateNtupleDColumn("Edep");
-    man->FinishNtuple(0);
+    man->CreateH2("DRZC", "", 762, 0, 762, 762, 0, 762);
+    man->CreateH2("DRZ1", "", 2286, 0, 2286, 635, 0, 635);
+    man->CreateH2("IMPL", "", 3500, 0, 3500, 1500, 0, 1500);
+    man->CreateH2("DRZ2", "", 2286, 0, 2286, 635, 0, 635);
+
+    man->CreateH1("Energy", "", 5000, 0, 10);
 }
 
 runAction::~runAction() {}
